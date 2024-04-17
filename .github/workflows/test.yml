@@ -1,0 +1,40 @@
+name: Build the Widget and push it to the Build Repo
+
+on:
+  push:
+    branches: [master]
+permissions:
+  contents: write
+jobs:
+  build:
+    name: "Build React app"
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      PAT: ${{secrets.PAT}}
+    strategy:
+      matrix:
+        node-version: [19.2.0]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+      - name: Setup Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{matrix.node-version}}
+          cache: "npm"
+      - run: npm i
+      - run: CI=false GENERATE_SOURCEMAP=false npm run build --if-present
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote remove origin
+          git remote add origin https://github.com/siddhrajcrest/videosdk-web-sample
+      - name: Stage and commit changes
+        run: |
+          git add build/
+          git commit -m "Build commit"
+      - name: Push Changes to github
+        run: git push origin main
