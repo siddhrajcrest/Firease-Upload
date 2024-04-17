@@ -31,7 +31,7 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote remove origin
-          git remote add origin https://github.com/siddhrajcrest/videosdk-web-sample
+          git remote add origin https://siddhrajcrest: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@github.com/siddhrajcrest/videosdk-web-sample
       - name: Stage and commit changes
         run: |
           git add build/
