@@ -8,7 +8,8 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "./firebase-config";
+import { getToken } from "firebase/messaging";
+import { db, messaging, storage } from "./firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 function App() {
@@ -17,6 +18,19 @@ function App() {
   const [files, setfiles] = useState();
   const userCollection = collection(db, "users");
   useEffect(() => {
+    getToken(messaging, { vapidKey: '6ttGM5UXRHdLg0VnKD0GBBoRCdq3NYAPNU4IKmtCMzk' }).then((currentToken) => {
+      if (currentToken) {
+        // Send the token to your server and update the UI if necessary
+        // ...
+      } else {
+        // Show permission request UI
+        console.log('No registration token available. Request permission to generate one.');
+        // ...
+      }
+    }).catch((err) => {
+      console.log('An error occurred while retrieving token. ', err);
+      // ...
+    });
     const getUsers = async () => {
       const data = await getDocs(userCollection);
       setusers(
@@ -28,7 +42,7 @@ function App() {
       console.log(users);
     };
     getUsers();
-    return () => {};
+    return () => { };
   }, []);
 
   const addUser = async () => {
